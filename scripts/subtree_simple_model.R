@@ -32,9 +32,6 @@ pas.chrom <- chrom[chrom$Species %in% pas.tip,]
 # define pars
 iter <- 100
 prior <- make.prior.exponential(r = 2)
-# variables to hold results and depths
-
-# read in data
 sub <- c('sca','luc','pas')
 for (i in 1:3){
   results <- vector(mode = "list", length = 100)
@@ -107,5 +104,5 @@ for (i in 1:3){
     results[[m]][,2:3] <- results[[m]][,2:3] / (tree.depth[m]*100)
   }
   #save data
-  write.csv(do.call(rbind,results), file = paste(paste('../results/simple',sub[i], sep = '_'),'csv', sep = '.'), row.names = F)
+  write.csv(do.call(rbind,results), file = paste(paste('../results/sub',sub[i], sep = '_'),'csv', sep = '.'), row.names = F)
 }

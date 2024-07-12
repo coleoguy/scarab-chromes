@@ -154,4 +154,4 @@ saveRDS(results, file = '../results/simple_model_scs.rds')
 
 
 
-
+dat <- readRDS('../../../../Downloads/results/simple_model_number.rds')
