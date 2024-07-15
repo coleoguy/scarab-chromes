@@ -1,14 +1,15 @@
 library(coda)
 library(viridis)
-
-
-library(chromePlus)
-library(ape)
 library(beeswarm)
-library(phytools)
-library (diversitree)
+library(ape)
+library(chromePlus)
 source('functions.R')
 library(fields)
+
+library(phytools)
+library (diversitree)
+
+
 library(plotrix)
 
 ## checking convergence
@@ -107,7 +108,7 @@ text(x=0.07,y=330,pos= 4, "Passalidae")
 
 
 # compare chromosome number and chromosome type
-type_num_dat <- read.csv('../data/chrom.data/SpeciesChromList.csv')
+type_num_dat <- read.csv('../data/SpeciesChromList.csv')
 df <- data.frame()
 for (i in 1:length(type_num_dat$Family)){
   if (type_num_dat$Family[i] %in% c('Scarabaeidae', 'Passalidae','Lucanidae')){
@@ -131,7 +132,7 @@ legend("topleft", legend = c( 'Scarabaeidae',"Lucanidae","Passalidae"),
 ## plot the genus that have XY and Neo-XY and XY XO
 ## compare to their chromosome number change 
 # chrom v sex chrom plot
-dat <- read.csv("../data/chrom.data/SpeciesChromList.csv")
+dat <- read.csv("../data/SpeciesChromList.csv")
 dat <- dat[!is.na(dat$autosome.haploid),]
 gen <- unique(dat$Genus)
 XY <- NeoXY <- rep(NA,length(gen))
@@ -154,25 +155,30 @@ plot(y=pdat$XY, x=xs1,
      cex =1.5
      )
 cols <- viridis(7, option = 'D',alpha = 0.7, begin = 0)
-text(x=1.98,y=9.6, "Phanaeus", adj=c(0,0.5))
-text(x=1.98,y=9.45, "Dorcus", adj=c(0,0.5))
-text(x=1.98,y=9.3, "Oryctes", adj=c(0,0.5))
-text(x=1.98,y=9.15, "Deltochilum", adj=c(0,0.5))
-text(x=1.98,y=9, "Haplidia", adj=c(0,0.5))
-text(x=1.98,y=8.85, "Phileurus", adj=c(0,0.5))
-text(x=1.98,y=8.7, "Phyllognathus",adj=c(0,0.5))
-
-lines(x=c(1.87,1.95), y=rep(9.6,2), col = cols[1],lwd = 3)
-lines(x=c(1.87,1.95), y=rep(9.45,2), col = cols[2],lwd = 3, lty =3)
-lines(x=c(1.87,1.95), y=rep(9.3,2), col = cols[3],lwd = 3)
-lines(x=c(1.87,1.95), y=rep(9.15,2), col = cols[4],lwd = 3)
-lines(x=c(1.87,1.95), y=rep(9,2), col = cols[5],lwd = 3)
-lines(x=c(1.87,1.95), y=rep(8.85,2), col = cols[6],lwd = 3)
-lines(x=c(1.87,1.95), y=rep(8.7,2), col = cols[7],lwd = 3)
+x <- 2.05
+y <- 9.6
+y.dis <- 0.15
+cex <- 0.7
+text(x=x,y=y, "Phanaeus", adj=c(0,0.5), cex = cex)
+text(x=x,y=y-y.dis, "Dorcus", adj=c(0,0.5), cex = cex)
+text(x=x,y=y-2*y.dis, "Oryctes", adj=c(0,0.5), cex = cex)
+text(x=x,y=y-3*y.dis, "Deltochilum", adj=c(0,0.5), cex = cex)
+text(x=x,y=y-4*y.dis, "Haplidia", adj=c(0,0.5), cex = cex)
+text(x=x,y=y-5*y.dis, "Phileurus", adj=c(0,0.5), cex = cex)
+text(x=x,y=y-6*y.dis, "Phyllognathus",adj=c(0,0.5), cex = cex)
+x <- 1.95
+x2 <- 2.03
+lwd <- 2
+lines(x=c(x,x2), y=rep(y,2), col = cols[1],lwd = lwd)
+lines(x=c(x,x2), y=rep(y-y.dis,2), col = cols[2],lwd = lwd, lty =3)
+lines(x=c(x,x2), y=rep(y-2*y.dis,2), col = cols[3],lwd = lwd)
+lines(x=c(x,x2), y=rep(y-3*y.dis,2), col = cols[4],lwd = lwd)
+lines(x=c(x,x2), y=rep(y-4*y.dis,2), col = cols[5],lwd = lwd)
+lines(x=c(x,x2), y=rep(y-5*y.dis,2), col = cols[6],lwd = lwd)
+lines(x=c(x,x2), y=rep(y-6*y.dis,2), col = cols[7],lwd = lwd)
 axis(side=1,at=c(1,2), c("XY","NeoXY"))
 xs2 <- c(2, 1+xs1[4], 1+xs1[5],2,1+xs1[6],2,1+xs1[7])
 points(y=pdat$NeoXY, x=xs2, cex=1.5)
-
 # cols[2] <- "red"
 for(i in 1:7){
   if (i != 2){
@@ -185,23 +191,22 @@ for(i in 1:7){
   }
 }
 
-###chrom number###
-#make simmap (only chrom number)
+
+# Simmap 
+#chrom number#
+# randomly pick one tree 
 tree <- read.tree('../data/final_100trees')[[37]]
 chrom <- read.csv('../data/final_chrom.csv')
 #transform trees to mya from hundred of mya 
 tree$edge.length <- tree$edge.length * 100
-
 rng <- c(range(chrom$Chroms, na.rm = T)[1] - 1,
          range(chrom$Chroms, na.rm = T)[2] + 1)
-
 chrom$gen.prob <- 1
 for(i in 1:nrow(chrom)){
   if(chrom$SCS[i] %in% c('XY','NeoXY')){
     chrom$gen.prob[i] <- 0
   }
 }
-
 # make a Q matrix 
 c <- rng[2]-rng[1]+1
 Q <- matrix(data = 0, c,c)
@@ -236,7 +241,7 @@ for(i in 1:nrow(chrom)){
 chrom.mat_ <- datatoMatrix(x = chrom.s[,c(2,3,5)],
                            range = rng,
                            hyper = F)
-results <- readRDS('../results/simple_model_scs.rds')
+results <- readRDS('../results/chrom_number_model_result.rds')
 first_tree <- results[[37]]
 b_result <- first_tree[51:100,]
 model <- Q
@@ -247,61 +252,35 @@ colnames(Q) <- rownames(Q) <- 1:19
 colnames(model) <- rownames(model) <- 1:19
 colnames(chrom.mat_) <- 1:19
 test <- make.simmap2(tree = tree, x = chrom.mat_, model = model,Q = Q,nsim = 1,pi = "fitzjohn",rejmax = 1000000,rejint = 100000, monitor = T)
-# fix simmap
+# fix simmap 
+# only if there are rejections out of limits
 dat.for.fix <- chrom.s[,c(1,2)]
 dat.for.fix$Chroms <- dat.for.fix$Chroms -2
 test.fixed <-fix.simmap(test,dat.for.fix,model)
 # write.simmap(test.fixed[[1]], file = '../results/simmap_chrom_num', map.order = 'right-to-left')
-test <- read.simmap(file = '../results/simmap_chrom_num',format = 'phylip')
+# test <- read.simmap(file = '../results/simmap_chrom_num',format = 'phylip')
 cols<-setNames(rev(viridis(n=19, option = 'H',begin = 0 )),
                c(1:19))
 plotSimmap(test,cols,fsize = 0.003, ftype = 'i',outline = F, lwd = 2, type = 'fan')
 
 plotSimmap(test,cols, fsize = .2, ftype = 'i',outline = F, lwd = 1)
 ape::nodelabels(cex = 0.1)
-# drop_test$tip.label
-# ape::nodelabels(cex = 0.1)
-# need to drop 
-test$tip.label
-whole_dat <- read.csv('../data/chrom.data/SpeciesChromList.csv')
-fam.col <- c()
-for (i in 1:length(test$tip.label)){
-  if (test$tip.label[i] %in% whole_dat$Name){
-    fam.col <- c(fam.col,whole_dat$Family[which(test$tip.label[i] == whole_dat$Name)[1]])
-  }
-  if (test$tip.label[i] %in% whole_dat$Genus){
-    fam.col <- c(fam.col,whole_dat$Family[which(test$tip.label[i] == whole_dat$Genus)[1]])
-  }
-  
+# checking family 
+chrom <- read.csv('../data/chrom.csv')
+trees <- read.tree('../data/final_100trees')
+tips <- trees[[37]]$tip.label
+famcol <- c()
+for (i in 1:length(tips)){
+  famcol <- c(famcol,chrom$Family[which(chrom$Species == tips[i])])
 }
-test2 <- test
-test2$tip.label <- fam.col
-plotSimmap(test2, cols,fsize = .5, ftype = 'i',outline = F, lwd = 2, type = 'fan')
-plotSimmap(test, cols,fsize = .5, ftype = 'i',outline = F, lwd = 2, type = 'fan')
-ape::nodelabels(cex = 0.1)
-# drop those tips 
-# Diplotaxis obscura
-# Autoserica
-# Maladera
-# Lichnanthe rathvoni
-# Amphimallon majale
-# Phyllophaga delata
-# Phyllophaga fusca
-# Phyllophaga pleei
-# Cotalpa lanigera
-# Glaresis
-# Homaloplia
-# Pelidnota punctata
-# Ectinohoplia rufipes
-
+test1 <- test
+test1$tip.label <- famcol
+plotSimmap(test1,colors = cols, fsize = .2, ftype = 'i',outline = F, lwd = 1, node.numbers = T)
 #plot
 plotSimmap(test, cols,fsize = .003, ftype = 'i',outline = F, lwd = 2, type = 'fan')
-arc.cladelabels(node=422,text="Passalidae",offset=5,mark.node=FALSE)
-arc.cladelabels(node=434,text="Lucanidae",offset=5,mark.node=FALSE)
-arc.cladelabels(node=c(238,325),text="Scarabaeidae",offset=5,mark.node=FALSE)
-
-
-
+arc.cladelabels(node=439,text="Passalidae",offset=5,mark.node=FALSE)
+arc.cladelabels(node=426,text="Lucanidae",offset=5,mark.node=FALSE)
+arc.cladelabels(node=231,text="Scarabaeidae",offset=5,mark.node=FALSE)
 
 # color bar
 num_colors <- 19

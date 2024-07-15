@@ -8,6 +8,7 @@ library(phytools)
 ### model with XO and XY ###
 ############################
 
+# chromosome number evolution
 # define pars
 iter <- 100
 prior <- make.prior.exponential(r = 2)
@@ -82,7 +83,7 @@ for (i in 1:length(results)){
   results[[i]][,2:3] <- results[[i]][,2:3] / (tree.depth[i]*100)
 }
 #write the results
-saveRDS(results, file = '../results/XY_XO_model_result.rds')
+saveRDS(results, file = '../results/chrom_number_model_result.rds')
 
 ####################################
 ### model with XO, XY, and NeoXY ###
