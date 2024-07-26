@@ -140,6 +140,7 @@ for ( i in 1:100){
                        w = w,
                        prior = prior)
 }
+
 # convert rate to mya from hundred of mya
 tree.depth <-c()
 trees <- read.tree("../data/final_100trees")
@@ -149,10 +150,6 @@ for(i in 1:100){
 for (i in 1:length(results)){
   results[[i]][,2:7] <- results[[i]][,2:7] / (tree.depth[i]*100)
 }
-#write the results
-saveRDS(results, file = '../results/simple_model_scs.rds')
+# write the results
+# saveRDS(results, file = '../results/simple_model_scs.rds')
 
-
-
-
-dat <- readRDS('../../../../Downloads/results/simple_model_number.rds')

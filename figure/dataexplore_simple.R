@@ -3,13 +3,8 @@ library(viridis)
 library(beeswarm)
 library(ape)
 library(chromePlus)
-source('functions.R')
-library(fields)
-
 library(phytools)
 library (diversitree)
-
-
 library(plotrix)
 
 ## checking convergence
@@ -41,14 +36,15 @@ for (i in 1:(length(all_sca$p)/100-1)){
   lines(all_sca$p[start:end])
 }
 
-## subset data 
-## post burnin
+###############
+# subset data #
+###############
 
+# post burnin
 sub_luc <- all_luc[all_luc$i == c(51:100),]
 sub_pass <- all_pass[all_pass$i == c(51:100),]
 sub_sca <- all_sca[all_sca$i == c(51:100),]
-
-# asc (fission)
+### asc (fission) ###
 # scarab
 cols <- viridis(3, option = 'D',alpha = 0.7, begin = 0.45)
 plot(density((sub_sca$asc1)),main ='',xlab='Fission (/MY)',
@@ -70,7 +66,6 @@ hpd <- HPDinterval(as.mcmc(sub_pass$asc))
 y<- -22
 cols <- viridis(3, option = 'D',alpha = 1, begin = 0.45)
 lines(y=c(y,y), x=hpd[1:2], lwd=2,col=cols[3])
-
 points(x=0.053,y=700, col = cols[1], pch= 16,cex=1)
 text(x=0.053,y=700,pos= 4, "Scarabaeidae", cex=1)
 points(x=0.053,y=660, col = cols[2], pch= 16,cex =1)
@@ -79,7 +74,7 @@ points(x=0.053,y=620, col = cols[3], pch= 16,cex=1)
 text(x=0.053,y=620,pos= 4, "Passalidae", cex=1)
 # save PDF 6x6
 
-#desc
+### desc ###
 cols <- viridis(3, option = 'D',alpha = 0.7, begin = 0.45)
 plot(density(sub_sca$desc1),main ='',xlab='Fusion (/MY)',
      xlim= c(0,0.09), ylim =c(-5,380))
@@ -106,8 +101,7 @@ points(x=0.07,y=330, col = cols[3], pch= 16)
 text(x=0.07,y=330,pos= 4, "Passalidae")
 # save as PDF 6x6 
 
-
-# compare chromosome number and chromosome type
+# scs and number distribution
 type_num_dat <- read.csv('../data/SpeciesChromList.csv')
 df <- data.frame()
 for (i in 1:length(type_num_dat$Family)){
@@ -117,7 +111,7 @@ for (i in 1:length(type_num_dat$Family)){
     }
   }
 }
-# XXXXXO
+# remove XXXXXO
 df <- df[-21,]
 cols <- viridis(3, option = 'D',alpha = 0.7, begin = 0.45)
 famcolor <- c('Scarabaeidae' = cols[1],"Lucanidae" = cols[2],"Passalidae" = cols[3])
@@ -129,6 +123,8 @@ beeswarm( df$autosome.haploid~df$SCS,
          )
 legend("topleft", legend = c( 'Scarabaeidae',"Lucanidae","Passalidae"),
        col = cols, pch = 19, cex = 1,bty = "n")
+# save PDF 6x6
+
 ## plot the genus that have XY and Neo-XY and XY XO
 ## compare to their chromosome number change 
 # chrom v sex chrom plot
@@ -190,173 +186,4 @@ for(i in 1:7){
           col=cols[i], lwd = 3, lty =3)
   }
 }
-
-
-# Simmap 
-#chrom number#
-# randomly pick one tree 
-tree <- read.tree('../data/final_100trees')[[37]]
-chrom <- read.csv('../data/final_chrom.csv')
-#transform trees to mya from hundred of mya 
-tree$edge.length <- tree$edge.length * 100
-rng <- c(range(chrom$Chroms, na.rm = T)[1] - 1,
-         range(chrom$Chroms, na.rm = T)[2] + 1)
-chrom$gen.prob <- 1
-for(i in 1:nrow(chrom)){
-  if(chrom$SCS[i] %in% c('XY','NeoXY')){
-    chrom$gen.prob[i] <- 0
-  }
-}
-# make a Q matrix 
-c <- rng[2]-rng[1]+1
-Q <- matrix(data = 0, c,c)
-# make row and column name vectors
-cname<-c(rng[1]:rng[2])
-colnames(Q)<-row.names(Q)<-cname
-for (i in 1:c){
-  for (j in 1:c){
-    # define transition
-    # number change
-      if (i+1==j){
-        Q[i,j] <- 1
-      }
-      if (i-1==j){
-        Q[i,j] <- 2
-    }
-  }
-}
-#re order the tips
-chrom$Species %in% tree$tip.label
-chrom.s <- chrom
-for (i in 1:length(tree$tip.label)){
-  temp <- which(chrom$Species == tree$tip.label[i])
-  chrom.s[i,] = chrom[temp,]
-}
-chrom.s$gen.prob <- 1
-for(i in 1:nrow(chrom)){
-  if(chrom.s$SCS[i] %in% c('XY','NeoXY')){
-    chrom.s$gen.prob[i] <- 0
-  }
-}
-chrom.mat_ <- datatoMatrix(x = chrom.s[,c(2,3,5)],
-                           range = rng,
-                           hyper = F)
-results <- readRDS('../results/chrom_number_model_result.rds')
-first_tree <- results[[37]]
-b_result <- first_tree[51:100,]
-model <- Q
-Q[Q == 1] <- mean(b_result$asc1)
-Q[Q == 2] <- mean(b_result$desc1)
-diag(Q) <- -(rowSums(Q))
-colnames(Q) <- rownames(Q) <- 1:19
-colnames(model) <- rownames(model) <- 1:19
-colnames(chrom.mat_) <- 1:19
-test <- make.simmap2(tree = tree, x = chrom.mat_, model = model,Q = Q,nsim = 1,pi = "fitzjohn",rejmax = 1000000,rejint = 100000, monitor = T)
-# fix simmap 
-# only if there are rejections out of limits
-dat.for.fix <- chrom.s[,c(1,2)]
-dat.for.fix$Chroms <- dat.for.fix$Chroms -2
-test.fixed <-fix.simmap(test,dat.for.fix,model)
-# write.simmap(test.fixed[[1]], file = '../results/simmap_chrom_num', map.order = 'right-to-left')
-# test <- read.simmap(file = '../results/simmap_chrom_num',format = 'phylip')
-cols<-setNames(rev(viridis(n=19, option = 'H',begin = 0 )),
-               c(1:19))
-plotSimmap(test,cols,fsize = 0.003, ftype = 'i',outline = F, lwd = 2, type = 'fan')
-
-plotSimmap(test,cols, fsize = .2, ftype = 'i',outline = F, lwd = 1)
-ape::nodelabels(cex = 0.1)
-# checking family 
-chrom <- read.csv('../data/chrom.csv')
-trees <- read.tree('../data/final_100trees')
-tips <- trees[[37]]$tip.label
-famcol <- c()
-for (i in 1:length(tips)){
-  famcol <- c(famcol,chrom$Family[which(chrom$Species == tips[i])])
-}
-test1 <- test
-test1$tip.label <- famcol
-plotSimmap(test1,colors = cols, fsize = .2, ftype = 'i',outline = F, lwd = 1, node.numbers = T)
-#plot
-plotSimmap(test, cols,fsize = .003, ftype = 'i',outline = F, lwd = 2, type = 'fan')
-arc.cladelabels(node=439,text="Passalidae",offset=5,mark.node=FALSE)
-arc.cladelabels(node=426,text="Lucanidae",offset=5,mark.node=FALSE)
-arc.cladelabels(node=231,text="Scarabaeidae",offset=5,mark.node=FALSE)
-
-# color bar
-num_colors <- 19
-values <- matrix(seq(3, 21, length.out = num_colors), ncol = 1)
-plot(10, 10, type = "n", xlim = c(0, 2), ylim = c(0, 2), xlab = "", ylab = "")
-image.plot(0, 1, values, col = colorRampPalette(rev(viridis(n=19, option = 'H',begin = 0 )))(num_colors), 
-           axes = F, xlab = "", ylab = "", legend.only = T)
-
-###########
-### SCS ###
-###########
-
-# checking divergence
-results <- readRDS('../results/simple_model_scs.rds')
-plot(results[[1]]$p, type = 'l', ylim = c(-110, -70))
-for (i in 2:100){
-  lines(results[[i]]$p)
-}
-chrom <- read.csv('../data/final_chrom.csv')
-trees <- read.tree("../data/final_100trees")
-#transform trees to mya from hundred of mya 
-for(i in 1:length(trees)){
-  trees[[i]]$edge.length <- trees[[i]]$edge.length * 100
-}
-scs <- c()
-for(i in 1:length(chrom$SCS)){
-  hit <- which(chrom$Species == trees[[37]]$tip.label[i])
-  scs[i] <- chrom$SCS[hit]
-}
-names(scs) <- trees[[37]]$tip.label
-first_tree <- results[[37]]
-b_result <- first_tree[51:100,]
-Q<- matrix(c(0,3,5,1,0,6,2,4,0), 3)
-colnames(Q) <- rownames(Q) <- c('NeoXY','XO','XY')
-model <- Q
-Q[1,2] <- mean(b_result$q23)
-Q[1,3] <- mean(b_result$q21)
-Q[2,1] <- mean(b_result$q32)
-Q[2,3] <- mean(b_result$q31)
-Q[3,1] <- mean(b_result$q12)
-Q[3,2] <- mean(b_result$q13)
-diag(Q) <- -rowSums(Q)
-
-# transition between 3 different sex chromosome systems are differnt
-
-# makeing simmap with ARD model
-test <- make.simmap(trees[[37]], x=scs, model = 'ARD' , pi="fitzjohn")
-# makeing simmap with the rate estimates from mcmc
-test <- make.simmap(tree=trees[[37]], x=scs ,Q=Q, pi="fitzjohn",nsim=100,model=model)
-# make.simmap2 with the rate estimates from mcmc
-test <- make.simmap2(tree=trees[[37]], x=scs ,Q=Q, pi="fitzjohn",nsim=1,model=model,monitor=T,rejmax=100000000)
-
-# the issue might have be the low rate and transition between short branch length
-# so I did plot the tree and sex chromosome systems and drop some suspecious tips 
-plotSimmap(test,fsize = 0.003, ftype = 'i',outline = F, lwd = 2, type = 'fan')
-
-cols <- setNames(viridis(3), c('NeoXY','XY','XO'))
-plotSimmap(test, fsize =0.0003, type = 'fan', colors =cols)
-target_node <- 496  # Replace with the ID of your target node
-descendant <- getDescendants(test, target_node)
-drop_tip <- test$tip.label[descendant]
-target_node <- 499  # Replace with the ID of your target node
-descendant <- getDescendants(test, target_node)
-drop_tip <- c(drop_tip,test$tip.label[descendant])
-drop_test <- drop.tip.simmap(test, drop_tip)
-target_node <- 463  # Replace with the ID of your target node
-descendant <- getDescendants(drop_test, target_node)
-drop_tip <- drop_test$tip.label[descendant]
-target_node <- 459  # Replace with the ID of your target node
-descendant <- getDescendants(drop_test, target_node)
-drop_tip <- c(drop_tip,test$tip.label[descendant])
-drop_test <- drop.tip.simmap(drop_test, drop_tip)
-#plot
-plotSimmap(drop_test, cols,fsize = .003, ftype = 'i',outline = F, lwd = 2, type = 'fan')
-arc.cladelabels(node=449,text="Passalidae",offset=5,mark.node=FALSE)
-arc.cladelabels(node=434,text="Lucanidae",offset=5,mark.node=FALSE)
-arc.cladelabels(node=c(238,325),text="Scarabaeidae",offset=5,mark.node=FALSE)
-add.simmap.legend(leg =c('NeoXY','XY','XO'), colors = viridis(3), vertical = T, prompt = F, y =-1.1, x =1.3)
-
+# save PDF 6x6
