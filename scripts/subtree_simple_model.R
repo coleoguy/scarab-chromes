@@ -1,3 +1,4 @@
+# loading required library
 library(chromePlus)
 library(diversitree)
 library(phytools)
@@ -7,6 +8,7 @@ chrom <- read.csv('../data/final_chrom.csv')
 sca.tip <- c()
 luc.tip <- c()
 pas.tip <- c()
+# create species list for each family
 for (i in 1:length(chrom$Family)){
   if (chrom$Family[i] == 'Scarabaeidae'){
     sca.tip <- c(sca.tip,chrom$Species[i])
@@ -18,12 +20,14 @@ for (i in 1:length(chrom$Family)){
     pas.tip <- c(pas.tip,chrom$Species[i])
   }
 }
+# create sub trees
 sca.tree <- keep.tip.multiPhylo(trees, sca.tip)
 luc.tree <- keep.tip.multiPhylo(trees, luc.tip)
 pas.tree <- keep.tip.multiPhylo(trees, pas.tip)
 sca.chrom <- chrom[chrom$Species %in% sca.tip,]
 luc.chrom <- chrom[chrom$Species %in% luc.tip,]
 pas.chrom <- chrom[chrom$Species %in% pas.tip,]
+# save the sub trees
 # write.tree(sca.tree, file = '../data/subtrees_sca')
 # write.tree(luc.tree, file = '../data/subtrees_luc')
 # write.tree(pas.tree, file = '../data/subtrees_pas')

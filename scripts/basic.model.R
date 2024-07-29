@@ -1,4 +1,3 @@
-# Sean
 # load required libraries
 library(chromePlus)
 library(diversitree)

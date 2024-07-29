@@ -66,21 +66,21 @@ colnames(Q) <- rownames(Q) <- 1:19
 colnames(model) <- rownames(model) <- 1:19
 colnames(chrom.mat_) <- 1:19
 test <- make.simmap2(tree = tree, x = chrom.mat_, model = model,Q = Q,nsim = 1,pi = "fitzjohn",rejmax = 1000000,rejint = 100000, monitor = T)
-# fix simmap 
-# only if there are rejections out of limits
-# dat.for.fix <- chrom.s[,c(1,2)]
-# dat.for.fix$Chroms <- dat.for.fix$Chroms -2
-# test.fixed <-fix.simmap(test,dat.for.fix,model)
-# write.simmap(test.fixed[[1]], file = '../results/simmap_chrom_num', map.order = 'right-to-left')
-# test <- read.simmap(file = '../results/simmap_chrom_num',format = 'phylip')
 cols<-setNames(rev(viridis(n=19, option = 'H',begin = 0 )),
                c(1:19))
-plotSimmap(test,cols,fsize = 0.003, ftype = 'i',outline = F, lwd = 2, type = 'fan')
+# fix simmap 
+# only if there are rejections out of limits
+
+# dat.for.fix <- chrom.s[,c(2,3)]
+# dat.for.fix$Chroms <- dat.for.fix$Chroms -2
+# test.fixed <-fix.simmap(test,dat.for.fix,model)
+# plotSimmap(test.fixed[[1]],cols,fsize = 0.003, ftype = 'i',outline = F, lwd = 2, type = 'fan')
+
 #plot
 plotSimmap(test, cols,fsize = .003, ftype = 'i',outline = F, lwd = 2, type = 'fan')
 arc.cladelabels(node=439,text="Passalidae",offset=5,mark.node=FALSE)
 arc.cladelabels(node=426,text="Lucanidae",offset=5,mark.node=FALSE)
-arc.cladelabels(node=231,text="Scarabaeidae",offset=5,mark.node=FALSE)
+arc.cladelabels(node=c(232,318),text="Scarabaeidae",offset=5,mark.node=FALSE)
 
 # color bar
 num_colors <- 19
@@ -132,6 +132,6 @@ cols <- setNames(viridis(3), c('NeoXY','XY','XO'))
 plotSimmap(test, fsize =0.0003, type = 'fan', colors =cols)
 arc.cladelabels(node=439,text="Passalidae",offset=5,mark.node=FALSE)
 arc.cladelabels(node=426,text="Lucanidae",offset=5,mark.node=FALSE)
-arc.cladelabels(node=231,text="Scarabaeidae",offset=5,mark.node=FALSE)
+arc.cladelabels(node=c(232,318),text="Scarabaeidae",offset=5,mark.node=FALSE)
 add.simmap.legend(leg =c('NeoXY','XY','XO'), colors = viridis(3), vertical = T, prompt = F, y =-105, x =130)
 
