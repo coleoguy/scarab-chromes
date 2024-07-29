@@ -6,8 +6,8 @@ library(viridis)
 source('functions.R')
 library(coda)
 # read in data
-chrom <- read.csv('../data/chrom.data/finalchrom.csv')
-trees <- read.tree("../data/6.BEAST/result_1000000000/finaltree")
+chrom <- read.csv('../data/final_chrom.csv')
+trees <- read.tree("../data/final_100trees")
 # change tree to hundred mya
 for(i in 1:length(trees)){
   trees[[i]]$edge.length <- trees[[i]]$edge.length * 100
@@ -116,15 +116,12 @@ for(i in 1:nrow(x)){
   x[i, chrom$sim.state[i]] <- 1
 }
 colnames(x) <- 1:(rng.len*3)
-test <- make.simmap2(tree, x = x, model = chrom.mat, pi = 'fitzjohn', nsim = 1000,rejmax = 1000000,rejint = 100000, monitor = T )
-# save the simmap because it takes a while to run
-# saveRDS(test, file = '../results/simmap_SAfusion')
-test <- readRDS('../results/simmap_SAfusion')
-test <- test[1:100]
+sim <- 100
+test <- make.simmap2(tree, x = x, model = chrom.mat, pi = 'fitzjohn', nsim = sim,rejmax = 1000000,rejint = 100000, monitor = T )
 #
 counts <- describe.simmap2(test)$count
 ## AA fusion (desc)
-# need column names
+# column that are fusions
 need.col <- c()
 for (i in 2:rng.len){
   need.col <- c(need.col,paste(i,i-1, sep = ','))
@@ -135,7 +132,6 @@ for (i in 19:(rng.len*2)){
 for (i in 36:(rng.len*3)){
   need.col <- c(need.col,paste(i,i-1, sep = ','))
 }
-colnames(counts)[which(colnames(counts) %in% need.col,T)]
 AAfusion <- rowSums(counts[,which(colnames(counts) %in% need.col,T)])
 ## SAfusion
 need.col <- c()
@@ -148,10 +144,8 @@ for (i in 36:51){
 for (i in 19:34){
   need.col <- c(need.col,paste(i,i+16, sep = ','))
 }
-colnames(counts)[which(colnames(counts) %in% need.col,T)]
 SAfusion <- rowSums(counts[,which(colnames(counts) %in% need.col,T)])
 totalfusion <- rowSums(counts[,colnames(counts)])
-
 obspropSA <- SAfusion / (SAfusion + AAfusion)
 expSA <- c()
 for(i in 1:100){
@@ -194,19 +188,23 @@ for(i in 1:100){
                   )
 }
 
+# plot
 cols <- viridis(2, begin = 0.5, alpha = 0.65)
 plot(density(expSA, bw = .01),
-     xlim = c(.15, 0.6), main = "",
-     xlab = "Proportion sex-autosome fusion",
+     xlim = c(.15, 0.56), main = "",
+     xlab = "Proportion of Sex-Autosome Fusion",
      cex.axis = .7, cex.lab = .7)
 polygon(density(expSA, bw = .01),
         col = cols[1])
 lines(density(obspropSA))
 polygon(density(obspropSA),
         col = cols[2])
-points(x=0.55,y=37, pch =16, col = cols[1])
-text(x=0.55,y=37, pos = 4, labels = "Expected", cex = 0.8)
-points(x=0.55,y=34, pch =16, col = cols[2])
-text(x=0.55,y=34, pos = 4, labels = "Inferred", cex = 0.8)
-HPDinterval(as.mcmc(obspropSA))
-HPDinterval(as.mcmc(expSA))
+x=0.5
+points(x=x,y=40, pch =16, col = cols[1])
+text(x=x,y=40, pos = 4, labels = "Expected", cex = 0.8)
+hpd <- HPDinterval(as.mcmc(expSA))
+lines(y=c(-0.5,-0.5), x=hpd[1:2], lwd=2,col=cols[1])
+points(x=x,y=38, pch =16, col = cols[2])
+text(x=x,y=38, pos = 4, labels = "Inferred", cex = 0.8)
+hpd <- HPDinterval(as.mcmc(obspropSA))
+lines(y=c(-0.5,-0.5), x=hpd[1:2], lwd=2,col=cols[2])
