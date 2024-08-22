@@ -71,11 +71,10 @@ cols<-setNames(rev(viridis(n=19, option = 'H',begin = 0 )),
 # fix simmap 
 # only if there are rejections out of limits
 
-# dat.for.fix <- chrom.s[,c(2,3)]
-# dat.for.fix$Chroms <- dat.for.fix$Chroms -2
-# test.fixed <-fix.simmap(test,dat.for.fix,model)
-# plotSimmap(test.fixed[[1]],cols,fsize = 0.003, ftype = 'i',outline = F, lwd = 2, type = 'fan')
-
+dat.for.fix <- chrom.s[,c(2,3)]
+dat.for.fix$Chroms <- dat.for.fix$Chroms -2
+test.fixed <-fix.simmap(test,dat.for.fix,model)
+test <- test.fixed[[1]]
 #plot
 plotSimmap(test, cols,fsize = .003, ftype = 'i',outline = F, lwd = 2, type = 'fan')
 arc.cladelabels(node=439,text="Passalidae",offset=5,mark.node=FALSE)

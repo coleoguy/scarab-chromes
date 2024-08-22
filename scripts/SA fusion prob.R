@@ -208,3 +208,4 @@ points(x=x,y=38, pch =16, col = cols[2])
 text(x=x,y=38, pos = 4, labels = "Inferred", cex = 0.8)
 hpd <- HPDinterval(as.mcmc(obspropSA))
 lines(y=c(-0.5,-0.5), x=hpd[1:2], lwd=2,col=cols[2])
+# save as PDF 6x6
