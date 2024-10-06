@@ -199,4 +199,3 @@ arc.cladelabels(node=439,text="Passalidae",offset=5,mark.node=FALSE)
 arc.cladelabels(node=426,text="Lucanidae",offset=5,mark.node=FALSE)
 arc.cladelabels(node=c(232,318),text="Scarabaeidae",offset=5,mark.node=FALSE)
 add.simmap.legend(leg =c('NeoXY','XY','XO'), colors = viridis(3), vertical = T, prompt = F, y =-105, x =130)
-
