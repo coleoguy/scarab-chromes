@@ -10,7 +10,40 @@ library(ape)
 
 # randomly pick one tree 
 tree <- read.tree('../data/final_100trees')[[37]]
-chrom <- read.csv('../data/final_chrom.csv')
+# chrom data 
+allchrom <- read.csv('../data/SpeciesChromList.csv')
+# subset chrom 
+tip.names <- tree$tip.label
+chrom <- data.frame()
+for (j in 1:length(tip.names)){
+  if (tip.names[j] %in% allchrom$Name){
+    if (length(which(allchrom$Name == tip.names[j])) == 1){
+      hitdat <- allchrom[which(allchrom$Name == tip.names[j]),c(1,4,6,8)]
+      colnames(hitdat) <- c("Family","Species","Chroms","SCS")
+      chrom <-rbind(chrom, hitdat) 
+    }
+    if (length(which(allchrom$Name == tip.names[j])) > 1){
+      pick <- sample(length(which(allchrom$Name == tip.names[j])),1)
+      hitdat <- allchrom[which(allchrom$Name == tip.names[j])[pick],c(1,4,6,8)]
+      colnames(hitdat) <- c("Family","Species","Chroms","SCS")
+      chrom <-rbind(chrom, hitdat)
+    }
+  }
+  if (tip.names[j] %in% allchrom$Genus){
+    if (length(which(allchrom$Genus == tip.names[j])) == 1){
+      hitdat <- allchrom[which(allchrom$Genus == tip.names[j]),c(1,2,6,8)]
+      colnames(hitdat) <- c("Family","Species","Chroms","SCS")
+      chrom <-rbind(chrom, hitdat)
+    }
+    if (length(which(allchrom$Genus == tip.names[j])) > 1){
+      pick <- (sample(length(which(allchrom$Genus == tip.names[j])),1))
+      hitdat <- allchrom[which(allchrom$Genus == tip.names[j])[pick],c(1,2,6,8)]
+      colnames(hitdat) <- c("Family","Species","Chroms","SCS")
+      chrom <-rbind(chrom, hitdat)
+    }
+  }
+}
+chrom$SCS <- sub("XXXXXO", "XO", chrom$SCS)
 #transform trees to mya from hundred of mya 
 tree$edge.length <- tree$edge.length * 100
 rng <- c(range(chrom$Chroms, na.rm = T)[1] - 1,
@@ -94,25 +127,58 @@ image.plot(0, 1, values, col = colorRampPalette(rev(viridis(n=19, option = 'H',b
 
 # checking divergence
 results <- readRDS('../results/simple_model_scs.rds')
-plot(results[[1]]$p, type = 'l', ylim = c(-110, -70))
+plot(results[[1]]$p, type = 'l', ylim = c(-130, -70))
 for (i in 2:100){
   lines(results[[i]]$p)
 }
 
 # making simmap
+tree <- read.tree('../data/final_100trees')[[37]]
 results <- readRDS('../results/simple_model_scs.rds')
-trees <- read.tree('../data/final_100trees')
-chrom <- read.csv('../data/final_chrom.csv')
-#transform trees to mya
-for(i in 1:length(trees)){
-  trees[[i]]$edge.length <- trees[[i]]$edge.length * 100
+# chrom data 
+allchrom <- read.csv('../data/SpeciesChromList.csv')
+# subset chrom 
+tip.names <- tree$tip.label
+chrom <- data.frame()
+for (j in 1:length(tip.names)){
+  if (tip.names[j] %in% allchrom$Name){
+    if (length(which(allchrom$Name == tip.names[j])) == 1){
+      hitdat <- allchrom[which(allchrom$Name == tip.names[j]),c(1,4,6,8)]
+      colnames(hitdat) <- c("Family","Species","Chroms","SCS")
+      chrom <-rbind(chrom, hitdat) 
+    }
+    if (length(which(allchrom$Name == tip.names[j])) > 1){
+      pick <- sample(length(which(allchrom$Name == tip.names[j])),1)
+      hitdat <- allchrom[which(allchrom$Name == tip.names[j])[pick],c(1,4,6,8)]
+      colnames(hitdat) <- c("Family","Species","Chroms","SCS")
+      chrom <-rbind(chrom, hitdat)
+    }
+  }
+  if (tip.names[j] %in% allchrom$Genus){
+    if (length(which(allchrom$Genus == tip.names[j])) == 1){
+      hitdat <- allchrom[which(allchrom$Genus == tip.names[j]),c(1,2,6,8)]
+      colnames(hitdat) <- c("Family","Species","Chroms","SCS")
+      chrom <-rbind(chrom, hitdat)
+    }
+    if (length(which(allchrom$Genus == tip.names[j])) > 1){
+      pick <- (sample(length(which(allchrom$Genus == tip.names[j])),1))
+      hitdat <- allchrom[which(allchrom$Genus == tip.names[j])[pick],c(1,2,6,8)]
+      colnames(hitdat) <- c("Family","Species","Chroms","SCS")
+      chrom <-rbind(chrom, hitdat)
+    }
+  }
 }
+chrom$SCS <- sub("XXXXXO", "XO", chrom$SCS)
+#transform trees to mya
+tree$edge.length <- tree$edge.length * 100
+rng <- c(range(chrom$Chroms, na.rm = T)[1] - 1,
+         range(chrom$Chroms, na.rm = T)[2] + 1)
 scs <- c()
 for(i in 1:length(chrom$SCS)){
-  hit <- which(chrom$Species == trees[[37]]$tip.label[i])
+  hit <- which(chrom$Species == tree$tip.label[i])
   scs[i] <- chrom$SCS[hit]
 }
-names(scs) <- trees[[37]]$tip.label
+names(scs) <- tree$tip.label
 first_tree <- results[[37]]
 b_result <- first_tree[51:100,]
 Q<- matrix(c(0,3,5,1,0,6,2,4,0), 3)
@@ -126,7 +192,7 @@ Q[3,1] <- mean(b_result$q12)
 Q[3,2] <- mean(b_result$q13)
 diag(Q) <- -rowSums(Q)
 # make.simmap2 with the rate estimates from mcmc
-test <- make.simmap2(tree=trees[[37]], x=scs ,Q=Q, pi="fitzjohn",nsim=1,model=model,monitor=T,rejmax=100000000)
+test <- make.simmap2(tree=tree, x=scs ,Q=Q, pi="fitzjohn",nsim=1,model=model,monitor=T,rejmax=100000000)
 cols <- setNames(viridis(3), c('NeoXY','XY','XO'))
 plotSimmap(test, fsize =0.0003, type = 'fan', colors =cols)
 arc.cladelabels(node=439,text="Passalidae",offset=5,mark.node=FALSE)

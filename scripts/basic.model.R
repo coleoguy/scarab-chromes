@@ -2,38 +2,75 @@
 library(chromePlus)
 library(diversitree)
 library(phytools)
-
+library(plyr)
 ############################
 ### model with XO and XY ###
 ############################
 
 # chromosome number evolution
+
+# read in data
+allchrom <- read.csv('../data/SpeciesChromList.csv')
+trees <- read.tree("../data/final_100trees")
 # define pars
 iter <- 100
 prior <- make.prior.exponential(r = 2)
-
 # variables to hold results and depths
 results <- vector(mode = "list", length = 100)
 tree.depth <- vector(mode = "numeric", length = 100)
 
-# read in data
-chrom <- read.csv('../data/final_chrom.csv')
-trees <- read.tree("../data/final_100trees")
-chrom$gen.prob <- 1
-for(i in 1:nrow(chrom)){
-  if(chrom$SCS[i] %in% c('XY','NeoXY')){
-    chrom$gen.prob[i] <- 0
-  }
-}
-# get the range of chromosome number
-rng <- c(range(chrom$Chroms, na.rm = T)[1] - 1,
-         range(chrom$Chroms, na.rm = T)[2] + 1)
-# make a probability matrix for chromosome number
-chrom.mat <- datatoMatrix(x = chrom[,c(2,3,5)],
-                          range = rng,
-                          hyper = F)
 for(i in 1:100){
   print(i)
+  ##################
+  ### chrom data ###
+  ##################
+  # genus level might have different data 
+  # so we need to random pick data eveytime 
+  # subset chrom data
+  tip.names <- trees[[1]]$tip.label
+  chrom <- data.frame()
+  for (j in 1:length(tip.names)){
+    if (tip.names[j] %in% allchrom$Name){
+      if (length(which(allchrom$Name == tip.names[j])) == 1){
+        hitdat <- allchrom[which(allchrom$Name == tip.names[j]),c(1,4,6,8)]
+        colnames(hitdat) <- c("Family","Species","Chroms","SCS")
+        chrom <-rbind(chrom, hitdat) 
+      }
+      if (length(which(allchrom$Name == tip.names[j])) > 1){
+        pick <- sample(length(which(allchrom$Name == tip.names[j])),1)
+        hitdat <- allchrom[which(allchrom$Name == tip.names[j])[pick],c(1,4,6,8)]
+        colnames(hitdat) <- c("Family","Species","Chroms","SCS")
+        chrom <-rbind(chrom, hitdat)
+      }
+    }
+    if (tip.names[j] %in% allchrom$Genus){
+      if (length(which(allchrom$Genus == tip.names[j])) == 1){
+        hitdat <- allchrom[which(allchrom$Genus == tip.names[j]),c(1,2,6,8)]
+        colnames(hitdat) <- c("Family","Species","Chroms","SCS")
+        chrom <-rbind(chrom, hitdat)
+      }
+      if (length(which(allchrom$Genus == tip.names[j])) > 1){
+        pick <- (sample(length(which(allchrom$Genus == tip.names[j])),1))
+        hitdat <- allchrom[which(allchrom$Genus == tip.names[j])[pick],c(1,2,6,8)]
+        colnames(hitdat) <- c("Family","Species","Chroms","SCS")
+        chrom <-rbind(chrom, hitdat)
+      }
+    }
+  }
+  chrom$SCS <- sub("XXXXXO", "XO", chrom$SCS)
+  chrom$gen.prob <- 1
+  for(k in 1:nrow(chrom)){
+    if(chrom$SCS[k] %in% c('XY','NeoXY')){
+      chrom$gen.prob[k] <- 0
+    }
+  }
+  # get the range of chromosome number
+  rng <- c(range(chrom$Chroms, na.rm = T)[1] - 1,
+           range(chrom$Chroms, na.rm = T)[2] + 1)
+  # make a probability matrix for chromosome number
+  chrom.mat <- datatoMatrix(x = chrom[,c(2,3,5)],
+                            range = rng,
+                            hyper = F)
   tree.depth[i] <- max(branching.times(trees[[i]]))
   trees[[i]]$edge.length <- trees[[i]]$edge.length / tree.depth[i]
   
@@ -82,30 +119,13 @@ for (i in 1:length(results)){
   results[[i]][,2:3] <- results[[i]][,2:3] / (tree.depth[i]*100)
 }
 #write the results
-saveRDS(results, file = '../results/chrom_number_model_result.rds')
+# saveRDS(results, file = '../results/chrom_number_model_result.rds')
 
 ####################################
 ### model with XO, XY, and NeoXY ###
 ####################################
-
-# mcmc to estimate rate
 trees <- read.tree('../data/final_100trees')
-# chrom data 
-chrom <- read.csv('../data/final_chrom.csv')
-for (i in 1:nrow(chrom)){
-  if(chrom$SCS[i] == 'XY'){
-    chrom$gen.prob[i] <- 1
-  }
-  if(chrom$SCS[i] == 'NeoXY'){
-    chrom$gen.prob[i] <- 2
-  }
-  if(chrom$SCS[i] == 'XO'){
-    chrom$gen.prob[i] <- 3
-  }
-}
-rownames(chrom) <- chrom$Species
-chrom <- chrom[,-1]
-scs <- setNames(chrom$gen.prob,row.names(chrom))
+allchrom <- read.csv('../data/SpeciesChromList.csv')
 # prior
 prior <- make.prior.exponential(2)
 iter <- 100
@@ -114,6 +134,53 @@ results <- vector(mode = "list", length = 100)
 tree.depth <- vector(mode = "numeric", length = 100)
 for ( i in 1:100){
   print(i)
+  #### chrom data ###
+  tip.names <- trees[[1]]$tip.label
+  chrom <- data.frame()
+  for (j in 1:length(tip.names)){
+    if (tip.names[j] %in% allchrom$Name){
+      if (length(which(allchrom$Name == tip.names[j])) == 1){
+        hitdat <- allchrom[which(allchrom$Name == tip.names[j]),c(1,4,6,8)]
+        colnames(hitdat) <- c("Family","Species","Chroms","SCS")
+        chrom <-rbind(chrom, hitdat) 
+      }
+      if (length(which(allchrom$Name == tip.names[j])) > 1){
+        pick <- sample(length(which(allchrom$Name == tip.names[j])),1)
+        hitdat <- allchrom[which(allchrom$Name == tip.names[j])[pick],c(1,4,6,8)]
+        colnames(hitdat) <- c("Family","Species","Chroms","SCS")
+        chrom <-rbind(chrom, hitdat)
+      }
+    }
+    if (tip.names[j] %in% allchrom$Genus){
+      if (length(which(allchrom$Genus == tip.names[j])) == 1){
+        hitdat <- allchrom[which(allchrom$Genus == tip.names[j]),c(1,2,6,8)]
+        colnames(hitdat) <- c("Family","Species","Chroms","SCS")
+        chrom <-rbind(chrom, hitdat)
+      }
+      if (length(which(allchrom$Genus == tip.names[j])) > 1){
+        pick <- (sample(length(which(allchrom$Genus == tip.names[j])),1))
+        hitdat <- allchrom[which(allchrom$Genus == tip.names[j])[pick],c(1,2,6,8)]
+        colnames(hitdat) <- c("Family","Species","Chroms","SCS")
+        chrom <-rbind(chrom, hitdat)
+      }
+    }
+  }
+  chrom$SCS <- sub("XXXXXO", "XO", chrom$SCS)
+  for (k in 1:nrow(chrom)){
+    if(chrom$SCS[k] == 'XY'){
+      chrom$gen.prob[k] <- 1
+    }
+    if(chrom$SCS[k] == 'NeoXY'){
+      chrom$gen.prob[k] <- 2
+    }
+    if(chrom$SCS[k] == 'XO'){
+      chrom$gen.prob[k] <- 3
+    }
+  }
+  rownames(chrom) <- chrom$Species
+  chrom <- chrom[,-1]
+  scs <- setNames(chrom$gen.prob,row.names(chrom))
+  ###################
   tree.depth[i] <- max(branching.times(trees[[i]]))
   trees[[i]]$edge.length <- trees[[i]]$edge.length / tree.depth[i]
   # make the likelihood function
@@ -151,4 +218,3 @@ for (i in 1:length(results)){
 }
 # write the results
 # saveRDS(results, file = '../results/simple_model_scs.rds')
-
