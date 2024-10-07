@@ -29,6 +29,7 @@ for(i in 1:100){
   # subset chrom data
   tip.names <- trees[[1]]$tip.label
   chrom <- data.frame()
+  # generate chrom data 
   for (j in 1:length(tip.names)){
     if (tip.names[j] %in% allchrom$Name){
       if (length(which(allchrom$Name == tip.names[j])) == 1){
