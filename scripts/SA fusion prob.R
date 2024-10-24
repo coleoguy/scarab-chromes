@@ -192,8 +192,7 @@ for(i in 1:100){
 cols <- viridis(2, begin = 0.5, alpha = 0.65)
 plot(density(expSA, bw = .01),
      xlim = c(.15, 0.56), main = "",
-     xlab = "Proportion of Sex-Autosome Fusion",
-     cex.axis = .7, cex.lab = .7)
+     xlab = "Proportion of Sex-Autosome Fusion")
 polygon(density(expSA, bw = .01),
         col = cols[1])
 lines(density(obspropSA))
@@ -201,11 +200,11 @@ polygon(density(obspropSA),
         col = cols[2])
 x=0.5
 points(x=x,y=40, pch =16, col = cols[1])
-text(x=x,y=40, pos = 4, labels = "Expected", cex = 0.8)
+text(x=x,y=40, pos = 4, labels = "Expected", cex = 0.9)
 hpd <- HPDinterval(as.mcmc(expSA))
 lines(y=c(-0.5,-0.5), x=hpd[1:2], lwd=2,col=cols[1])
 points(x=x,y=38, pch =16, col = cols[2])
-text(x=x,y=38, pos = 4, labels = "Inferred", cex = 0.8)
+text(x=x,y=38, pos = 4, labels = "Inferred", cex = 0.9)
 hpd <- HPDinterval(as.mcmc(obspropSA))
 lines(y=c(-0.5,-0.5), x=hpd[1:2], lwd=2,col=cols[2])
 # save as PDF 6x6
