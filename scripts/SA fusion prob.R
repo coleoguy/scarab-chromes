@@ -6,9 +6,40 @@ library(viridis)
 source('functions.R')
 library(coda)
 # read in data
-chrom <- read.csv('../data/final_chrom.csv')
+allchrom <- read.csv('../data/SpeciesChromList.csv')
 trees <- read.tree("../data/final_100trees")
-# change tree to hundred mya
+tip.names <- trees[[1]]$tip.label
+chrom <- data.frame()
+# generate chrom data (random pick)
+for (j in 1:length(tip.names)){
+  if (tip.names[j] %in% allchrom$Name){
+    if (length(which(allchrom$Name == tip.names[j])) == 1){
+      hitdat <- allchrom[which(allchrom$Name == tip.names[j]),c(1,4,6,8)]
+      colnames(hitdat) <- c("Family","Species","Chroms","SCS")
+      chrom <-rbind(chrom, hitdat) 
+    }
+    if (length(which(allchrom$Name == tip.names[j])) > 1){
+      pick <- sample(length(which(allchrom$Name == tip.names[j])),1)
+      hitdat <- allchrom[which(allchrom$Name == tip.names[j])[pick],c(1,4,6,8)]
+      colnames(hitdat) <- c("Family","Species","Chroms","SCS")
+      chrom <-rbind(chrom, hitdat)
+    }
+  }
+  if (tip.names[j] %in% allchrom$Genus){
+    if (length(which(allchrom$Genus == tip.names[j])) == 1){
+      hitdat <- allchrom[which(allchrom$Genus == tip.names[j]),c(1,2,6,8)]
+      colnames(hitdat) <- c("Family","Species","Chroms","SCS")
+      chrom <-rbind(chrom, hitdat)
+    }
+    if (length(which(allchrom$Genus == tip.names[j])) > 1){
+      pick <- (sample(length(which(allchrom$Genus == tip.names[j])),1))
+      hitdat <- allchrom[which(allchrom$Genus == tip.names[j])[pick],c(1,2,6,8)]
+      colnames(hitdat) <- c("Family","Species","Chroms","SCS")
+      chrom <-rbind(chrom, hitdat)
+    }
+  }
+}
+chrom$SCS <- sub("XXXXXO", "XO", chrom$SCS)
 for(i in 1:length(trees)){
   trees[[i]]$edge.length <- trees[[i]]$edge.length * 100
 }
@@ -191,14 +222,14 @@ for(i in 1:100){
 # plot
 cols <- viridis(2, begin = 0.5, alpha = 0.65)
 plot(density(expSA, bw = .01),
-     xlim = c(.15, 0.56), main = "",
+     xlim = c(.15, 0.8), main = "",
      xlab = "Proportion of Sex-Autosome Fusion")
 polygon(density(expSA, bw = .01),
         col = cols[1])
 lines(density(obspropSA))
 polygon(density(obspropSA),
         col = cols[2])
-x=0.5
+x=0.7
 points(x=x,y=40, pch =16, col = cols[1])
 text(x=x,y=40, pos = 4, labels = "Expected", cex = 0.9)
 hpd <- HPDinterval(as.mcmc(expSA))
