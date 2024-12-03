@@ -3,6 +3,7 @@ source('../scripts/functions.R')
 library(fields)
 library(viridis)
 library(ape)
+library(chromePlus)
 
 #####################
 # chromosome number #

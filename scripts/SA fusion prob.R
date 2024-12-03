@@ -239,3 +239,37 @@ text(x=x,y=38, pos = 4, labels = "Inferred", cex = 0.9)
 hpd <- HPDinterval(as.mcmc(obspropSA))
 lines(y=c(-0.5,-0.5), x=hpd[1:2], lwd=2,col=cols[2])
 # save as PDF 6x6
+
+
+## simmap plot
+library(fields)
+# NeoXY, XO, XY
+cols <- setNames(c(colorRampPalette(c("firebrick1", "firebrick4"))(17),
+                   colorRampPalette(c("green", "green4"))(17),
+                   colorRampPalette(c("dodgerblue", "dodgerblue4"))(17)), 
+                 c(1:51))
+plotSimmap(test[[1]], type = 'fan', fsize = 0.03, colors = cols)
+sexmode <- as.factor(setNames(chrom$SCS, chrom$Species))
+sexmode <- to.matrix(sexmode, levels(sexmode))
+sexmode <- sexmode[test[[1]]$tip.label,]
+tiplabels(pie = sexmode, piecol = palette()[c(2,3,4)], cex = 0.15)
+# Create a color palette
+color_pal <- colorRampPalette(c("firebrick1", "firebrick4"))(17)
+data_matrix <- matrix(1:17, nrow = 17, ncol = 1)
+image.plot(z = data_matrix, col = color_pal, axes = FALSE, legend.only = TRUE,
+           legend.width = 1,
+           legend.shrink = 1, legend.mar = 3)
+
+color_pal <- colorRampPalette(c("green", "green4"))(17)
+data_matrix <- matrix(1:17, nrow = 17, ncol = 1)
+image.plot(z = data_matrix, col = color_pal, axes = FALSE, legend.only = TRUE,
+           legend.width = 1,
+           legend.shrink = 1, add = TRUE, legend.mar = 6,
+           axis.args = list(labels = FALSE, tick = FALSE))
+
+color_pal <- colorRampPalette(c("dodgerblue", "dodgerblue4"))(17)
+data_matrix <- matrix(1:17, nrow = 17, ncol = 1)
+image.plot(z = data_matrix, col = color_pal, axes = FALSE, legend.only = TRUE,
+           legend.width = 1,
+           legend.shrink = 1, add = TRUE, legend.mar = 9,
+           axis.args = list(labels = FALSE, tick = FALSE))
