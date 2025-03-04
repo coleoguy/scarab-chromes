@@ -7,7 +7,7 @@ source('functions.R')
 library(coda)
 # read in data
 allchrom <- read.csv('../data/SpeciesChromList.csv')
-trees <- read.tree("../data/final_100trees")
+trees <- read.tree("../data/final100trees")
 tip.names <- trees[[1]]$tip.label
 chrom <- data.frame()
 # generate chrom data (random pick)
@@ -43,6 +43,8 @@ chrom$SCS <- sub("XXXXXO", "XO", chrom$SCS)
 for(i in 1:length(trees)){
   trees[[i]]$edge.length <- trees[[i]]$edge.length * 100
 }
+# random pick one
+# for plotting I chose 37 so keep it consistent
 tree <- trees[[37]]
 #making Q matrix
 rng <- range(chrom$Chroms)
@@ -149,6 +151,7 @@ for(i in 1:nrow(x)){
 colnames(x) <- 1:(rng.len*3)
 sim <- 100
 test <- make.simmap2(tree, x = x, model = chrom.mat, pi = 'fitzjohn', nsim = sim,rejmax = 1000000,rejint = 100000, monitor = T )
+# saveRDS(test, file = '../results/simmap.rds')
 #
 counts <- describe.simmap2(test)$count
 ## AA fusion (desc)
@@ -218,18 +221,19 @@ for(i in 1:100){
                   Pfsa(Da = 39, scs = "XO") * times[34]
                   )
 }
-
+mean(expSA)
+mean(obspropSA)
 # plot
 cols <- viridis(2, begin = 0.5, alpha = 0.65)
 plot(density(expSA, bw = .01),
-     xlim = c(.15, 0.8), main = "",
+     xlim = c(.15, 0.65), main = "",
      xlab = "Proportion of Sex-Autosome Fusion")
 polygon(density(expSA, bw = .01),
         col = cols[1])
 lines(density(obspropSA))
 polygon(density(obspropSA),
         col = cols[2])
-x=0.7
+x=0.58
 points(x=x,y=40, pch =16, col = cols[1])
 text(x=x,y=40, pos = 4, labels = "Expected", cex = 0.9)
 hpd <- HPDinterval(as.mcmc(expSA))

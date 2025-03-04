@@ -3,7 +3,7 @@ library(chromePlus)
 library(diversitree)
 library(phytools)
 # subtrees
-trees <- read.tree('../data/final_100trees')
+trees <- read.tree('../data/final100trees')
 allchrom <- read.csv('../data/SpeciesChromList.csv')
 sca.tip <- c()
 luc.tip <- c()
@@ -37,6 +37,7 @@ for (i in 1:length(tip.names)){
 sca.tree <- keep.tip.multiPhylo(trees, sca.tip)
 luc.tree <- keep.tip.multiPhylo(trees, luc.tip)
 pas.tree <- keep.tip.multiPhylo(trees, pas.tip)
+
 # subtree analyses
 # define pars
 iter <- 100
@@ -53,7 +54,7 @@ for (i in 1:3){
     # create subchrom
     chrom <- data.frame()
     tip.names <- eval(parse(text = paste(sub[i],'tip',sep = '.')))
-    # generate chrom data
+    # generate chrom data 
     for (n in 1:length(tip.names)){
       if (tip.names[n] %in% allchrom$Name){
         if (length(which(allchrom$Name == tip.names[n])) == 1){

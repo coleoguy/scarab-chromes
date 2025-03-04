@@ -10,7 +10,7 @@ library(chromePlus)
 #####################
 
 # randomly pick one tree 
-tree <- read.tree('../data/final_100trees')[[37]]
+tree <- read.tree('../data/final100trees')[[37]]
 # chrom data 
 allchrom <- read.csv('../data/SpeciesChromList.csv')
 # subset chrom 
@@ -134,7 +134,7 @@ for (i in 2:100){
 }
 
 # making simmap
-tree <- read.tree('../data/final_100trees')[[37]]
+tree <- read.tree('../data/final100trees')[[37]]
 results <- readRDS('../results/simple_model_scs.rds')
 # chrom data 
 allchrom <- read.csv('../data/SpeciesChromList.csv')

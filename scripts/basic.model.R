@@ -11,7 +11,7 @@ library(plyr)
 
 # read in data
 allchrom <- read.csv('../data/SpeciesChromList.csv')
-trees <- read.tree("../data/final_100trees")
+trees <- read.tree("../data/final100trees")
 # define pars
 iter <- 100
 prior <- make.prior.exponential(r = 2)
@@ -25,7 +25,7 @@ for(i in 1:100){
   ### chrom data ###
   ##################
   # genus level might have different data 
-  # so we need to random pick data eveytime 
+  # so we need to random pick data everytime 
   # subset chrom data
   tip.names <- trees[[1]]$tip.label
   chrom <- data.frame()
@@ -112,7 +112,7 @@ for(i in 1:100){
 
 # convert rate to millions of years
 tree.depth <-c()
-trees <- read.tree("../data/final_100trees")
+trees <- read.tree("../data/final100trees")
 for(i in 1:100){
   tree.depth[i] <- max(branching.times(trees[[i]]))
 }
@@ -125,7 +125,7 @@ for (i in 1:length(results)){
 ####################################
 ### model with XO, XY, and NeoXY ###
 ####################################
-trees <- read.tree('../data/final_100trees')
+trees <- read.tree('../data/final100trees')
 allchrom <- read.csv('../data/SpeciesChromList.csv')
 # prior
 prior <- make.prior.exponential(2)
