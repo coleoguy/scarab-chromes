@@ -47,10 +47,34 @@ for (i in 1:length(genus)){
 }
 # remove the last two row because of missing data
 table <- table[,-c(19,18)]
-# reorder tree 
-phylo.heatmap(trim.genus.tree, table, fsiz = c(0.0025,0.5,0.4),
+cols <- viridis(40, direction = -1, option = "F")
+cols[1] <- 'white'
+phylo.heatmap(trim.genus.tree, table, fsiz = c(0.0025,0.5,0.5),
               split=c(0.7,0.3),
               legend = T,labels = T,
+              legend.pos = c(0.02, 0.01),
               pts = F, lwd = 0.5,
               #colors = heat.colors(n= 300)[300:1])
-              colors = viridis(300, direction = -1, option = "F"))
+              colors = cols)
+# draw grid line
+lwd = 0.05
+grid.col <- 'gray87'
+y0=-0.0045
+y1=1.0045
+x0 = 1.1424
+x1 = 0.501
+# segments(x0 = x1, y0 = y0, x1 = x1, y1 = y1, lwd = lwd, col = grid.col)
+# segments(x0 = x0, y0 = y0, x1 = x0, y1 = y1, lwd = lwd, col = grid.col)
+# segments(x0 = 0.5, y0 = y0, x1 = 1.143, y1 = y0, lwd = lwd, col = grid.col)
+# segments(x0 = 0.5, y0 = y1, x1 = 1.143, y1 = y1, lwd = lwd, col = grid.col)
+
+for (i in 1:(length(trim.genus.tree$tip.label)+1)){
+  z = seq(from = y0, to = y1, length.out = length(trim.genus.tree$tip.label)+1)[i]
+  segments(x0 = x1, y0 = z, x1 = x0, y1 = z, lwd = lwd, col = grid.col)
+}
+
+for (i in 1:(ncol(table)+1)){
+  z = seq(from = x0, to = x1, length.out = ncol(table)+1)[i]
+  segments(x0 = z, y0 = y0, x1 = z, y1 = y1, lwd = lwd,col = grid.col)
+}
+
