@@ -13,7 +13,7 @@ for (i in 1:(length(all_luc$p)/100-1)){
   lines(all_luc$p[start:end])
 }
 
-plot(all_pass$p[1:100], type = 'l', ylim = c(-120, -40), main = 'Passalidae', ylab = '')
+plot(all_pass$p[1:100], type = 'l', ylim = c(-120, -50), main = 'Passalidae', ylab = '')
 for (i in 1:(length(all_pass$p)/100-1)){
   index <- seq(101, length(all_pass$p),by = 100)
   start <- index[i]
@@ -21,55 +21,27 @@ for (i in 1:(length(all_pass$p)/100-1)){
   lines(all_pass$p[start:end])
 }
 
-plot(all_sca$p[1:100], type = 'l', ylim = c(-210,-165), main = 'Scarabeidae', ylab = '')
+plot(all_sca$p[1:100], type = 'l', ylim = c(-270,-150), main = 'Scarabeidae', ylab = '')
 for (i in 1:(length(all_sca$p)/100-1)){
   index <- seq(101, length(all_sca$p),by = 100)
   start <- index[i]
   end <- index[i]+100-1
   lines(all_sca$p[start:end])
 }
+
+###############
+# subset data #
+###############
+
 # post burnin
 sub_luc <- all_luc[all_luc$i == c(51:100),]
 sub_pass <- all_pass[all_pass$i == c(51:100),]
 sub_sca <- all_sca[all_sca$i == c(51:100),]
-
-
-### desc (fusion) ###
-cols <- viridis(3, option = 'D',alpha = 0.7, begin = 0.45)
-plot(density(sub_sca$desc1),main ='',xlab='Fusion (/MY)',
-     xlim= c(0,0.09), ylim =c(-10,230))
-polygon(density(sub_sca$desc1),col=cols[1])
-hpd <- HPDinterval(as.mcmc(sub_sca$desc))
-y <- -5
-lines(y=c(y,y), x=hpd[1:2], lwd=2,col=cols[1])
-lines(density((sub_luc$desc1)))
-polygon(density(sub_luc$desc1),col=cols[2])
-hpd <- HPDinterval(as.mcmc(sub_luc$desc))
-y <- -10
-lines(y=c(y,y), x=hpd[1:2], lwd=2,col=cols[2])
-lines(density((sub_pass$desc1)))
-polygon(density(sub_pass$desc1),col=cols[3])
-hpd <- HPDinterval(as.mcmc(sub_pass$desc))
-y <-  -15
-lines(y=c(y,y), x=hpd[1:2], lwd=2,col=cols[3])
-cols <- viridis(3, option = 'D',alpha = 1, begin = 0.45)
-x=0.07
-points(x=x,y=230, col = cols[1], pch= 16)
-text(x=x,y=230,pos= 4, "Scarabaeidae")
-points(x=x,y=217, col = cols[2], pch= 16)
-text(x=x,y=217,pos= 4, "Lucanidae")
-points(x=x,y=204, col = cols[3], pch= 16)
-text(x=x,y=204,pos= 4, "Passalidae")
-mean(sub_sca$desc1)
-mean(sub_luc$desc1)
-mean(sub_pass$desc1)
-# save as PDF 6x6 
-
 ### asc (fission) ###
 # scarab
 cols <- viridis(3, option = 'D',alpha = 0.7, begin = 0.45)
 plot(density((sub_sca$asc1)),main ='',xlab='Fission (/MY)',
-     ylim =c(-10,265), xlim=c(0,0.09),)
+     ylim =c(-10,260), xlim=c(0,0.09),)
 polygon(density(sub_sca$asc1),col=cols[1])
 hpd <- HPDinterval(as.mcmc(sub_sca$asc))
 y <- -5
@@ -88,14 +60,38 @@ y<- -15
 cols <- viridis(3, option = 'D',alpha = 1, begin = 0.45)
 lines(y=c(y,y), x=hpd[1:2], lwd=2,col=cols[3])
 x = 0.07
-points(x=x,y=265, col = cols[1], pch= 16,cex=1)
-text(x=x,y=265,pos= 4, "Scarabaeidae", cex=1)
-points(x=x,y=250, col = cols[2], pch= 16,cex =1)
-text(x=x,y=250,pos= 4, "Lucanidae", cex=1)
-points(x=x,y=235, col = cols[3], pch= 16,cex=1)
-text(x=x,y=235,pos= 4, "Passalidae", cex=1)
-# average
-mean(sub_sca$asc1)
-mean(sub_luc$asc1)
-mean(sub_pass$asc1)
+points(x=x,y=260, col = cols[1], pch= 16,cex=1)
+text(x=x,y=260,pos= 4, "Scarabaeidae", cex=1)
+points(x=x,y=245, col = cols[2], pch= 16,cex =1)
+text(x=x,y=245,pos= 4, "Lucanidae", cex=1)
+points(x=x,y=230, col = cols[3], pch= 16,cex=1)
+text(x=x,y=230,pos= 4, "Passalidae", cex=1)
 # save PDF 6x6
+
+### desc ###
+cols <- viridis(3, option = 'D',alpha = 0.7, begin = 0.45)
+plot(density(sub_sca$desc1),main ='',xlab='Fusion (/MY)',
+     xlim= c(0,0.09), ylim =c(-10,260))
+polygon(density(sub_sca$desc1),col=cols[1])
+hpd <- HPDinterval(as.mcmc(sub_sca$desc))
+y <- -5
+lines(y=c(y,y), x=hpd[1:2], lwd=2,col=cols[1])
+lines(density((sub_luc$desc1)))
+polygon(density(sub_luc$desc1),col=cols[2])
+hpd <- HPDinterval(as.mcmc(sub_luc$desc))
+y <- -10
+lines(y=c(y,y), x=hpd[1:2], lwd=2,col=cols[2])
+lines(density((sub_pass$desc1)))
+polygon(density(sub_pass$desc1),col=cols[3])
+hpd <- HPDinterval(as.mcmc(sub_pass$desc))
+y <-  -15
+lines(y=c(y,y), x=hpd[1:2], lwd=2,col=cols[3])
+cols <- viridis(3, option = 'D',alpha = 1, begin = 0.45)
+x = 0.07
+points(x=x,y=260, col = cols[1], pch= 16)
+text(x=x,y=260,pos= 4, "Scarabaeidae")
+points(x=x,y=245, col = cols[2], pch= 16)
+text(x=x,y=245,pos= 4, "Lucanidae")
+points(x=x,y=230, col = cols[3], pch= 16)
+text(x=x,y=230,pos= 4, "Passalidae")
+# save as PDF 6x6 

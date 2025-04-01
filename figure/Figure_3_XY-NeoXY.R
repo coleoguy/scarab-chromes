@@ -1,6 +1,7 @@
 ## plot the genus that have XY and Neo-XY and XY XO
 ## compare to their chromosome number change 
 # chrom v sex chrom plot
+library(viridis)
 dat <- read.csv("../data/SpeciesChromList.csv")
 dat <- dat[!is.na(dat$autosome.haploid),]
 gen <- unique(dat$Genus)
@@ -22,7 +23,7 @@ plot(y=pdat$XY, x=xs1,
      xaxt="n",
      xlab="Sex Chromosome System", ylab = 'Haploid Autosome Number ( x\u0305 )',
      cex =1.5, pch = 16,
-     cex.lab = 1,
+     cex.lab = 1.2,
      col = cols
 )
 cols <- viridis(7, option = 'D',alpha = 0.7, begin = 0)

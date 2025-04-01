@@ -1,5 +1,6 @@
 # fusion and fision 
 # chromosome number evo all dataset
+library(coda)
 chrom.number.results <- do.call(rbind,readRDS('../results/chrom_number_model_result.rds'))
 plot(chrom.number.results$p[1:100], type = 'l',ylim = c(-410,-280), main = '', ylab = '')
 # checking convergence time 

@@ -2,7 +2,6 @@
 library(ape)
 library(phytools)
 library(viridis)
-library(RColorBrewer)
 trees <- read.tree('../data/final100trees')
 chrom <- read.csv('../data/SpeciesChromList.csv')
 # random pick one tree

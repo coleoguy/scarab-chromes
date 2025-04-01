@@ -1,4 +1,3 @@
-# scs and number distribution
 library(viridis)
 library(beeswarm)
 type_num_dat <- read.csv('../data/SpeciesChromList.csv')
@@ -11,7 +10,7 @@ for (i in 1:length(type_num_dat$Family)){
   }
 }
 # remove XXXXXO
-df <- df[-which(df$SCS == 'XXXXXO'),]
+df <- df[-21,]
 cols <- viridis(3, option = 'D',alpha = 0.7, begin = 0.45)
 famcolor <- c('Scarabaeidae' = cols[1],"Lucanidae" = cols[2],"Passalidae" = cols[3])
 beeswarm( df$autosome.haploid~df$SCS,
