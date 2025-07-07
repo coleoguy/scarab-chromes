@@ -1,4 +1,6 @@
 # propotion of SA-fusion
+library(devtools)
+install_github('coleoguy/evobir')
 library(evobiR)
 library(ape)
 library(phytools)
@@ -150,8 +152,9 @@ for(i in 1:nrow(x)){
 }
 colnames(x) <- 1:(rng.len*3)
 sim <- 100
-test <- make.simmap2(tree, x = x, model = chrom.mat, pi = 'fitzjohn', nsim = sim,rejmax = 1000000,rejint = 100000, monitor = T )
+# test <- make.simmap2(tree, x = x, model = chrom.mat, pi = 'fitzjohn', nsim = sim,rejmax = 1000000,rejint = 100000, monitor = T )
 # saveRDS(test, file = '../results/simmap.rds')
+test <- readRDS('../results/simmap.rds')
 #
 counts <- describe.simmap2(test)$count
 ## AA fusion (desc)
@@ -225,23 +228,27 @@ mean(expSA)
 mean(obspropSA)
 # plot
 cols <- viridis(2, begin = 0.5, alpha = 0.65)
+hpdcols <- viridis(2, begin = 0.5)
 plot(density(expSA, bw = .01),
      xlim = c(.15, 0.65), main = "",
+     ylim = c(-0.5, 40),
      xlab = "Proportion of Sex-Autosome Fusion")
 polygon(density(expSA, bw = .01),
         col = cols[1])
 lines(density(obspropSA))
 polygon(density(obspropSA),
         col = cols[2])
-x=0.58
-points(x=x,y=40, pch =16, col = cols[1])
-text(x=x,y=40, pos = 4, labels = "Expected", cex = 0.9)
+x=0.57
+points(x=x,y=40, pch =16, col = hpdcols[1], cex = 1.2)
+text(x=x,y=40, pos = 4, labels = "Expected", cex = 1)
 hpd <- HPDinterval(as.mcmc(expSA))
-lines(y=c(-0.5,-0.5), x=hpd[1:2], lwd=2,col=cols[1])
-points(x=x,y=38, pch =16, col = cols[2])
-text(x=x,y=38, pos = 4, labels = "Inferred", cex = 0.9)
+lwd = 5
+y = -0.9
+lines(y=c(y,y), x=hpd[1:2], lwd = lwd,col=hpdcols[1])
+points(x=x,y=38, pch =16, col = cols[2], cex = 1.2)
+text(x=x,y=38, pos = 4, labels = "Observed", cex = 1)
 hpd <- HPDinterval(as.mcmc(obspropSA))
-lines(y=c(-0.5,-0.5), x=hpd[1:2], lwd=2,col=cols[2])
+lines(y=c(y,y), x=hpd[1:2], lwd = lwd,col=hpdcols[2])
 # save as PDF 6x6
 
 
