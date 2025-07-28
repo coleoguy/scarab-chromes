@@ -99,8 +99,8 @@ x1 = 0.501
 # segments(x0 = 0.5, y0 = y0, x1 = 1.143, y1 = y0, lwd = lwd, col = grid.col)
 # segments(x0 = 0.5, y0 = y1, x1 = 1.143, y1 = y1, lwd = lwd, col = grid.col)
 
-for (i in 1:(length(trim.genus.tree_ordered$tip.label)+1)){
-  z = seq(from = y0, to = y1, length.out = length(trim.genus.tree_ordered$tip.label)+1)[i]
+for (i in 1:(length(tree_ordered$tip.label)+1)){
+  z = seq(from = y0, to = y1, length.out = length(tree_ordered$tip.label)+1)[i]
   segments(x0 = x1, y0 = z, x1 = x0, y1 = z, lwd = lwd, col = grid.col)
 }
 

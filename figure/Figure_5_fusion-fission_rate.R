@@ -41,7 +41,7 @@ sub_sca <- all_sca[all_sca$i == c(51:100),]
 ### desc ###
 cols <- viridis(3, option = 'D',alpha = 0.7, begin = 0.45)
 hpdcols <- viridis(3, option = 'D', begin = 0.45)
-plot(density(sub_sca$desc1),main ='',xlab='Fusion (/MY)',
+plot(density(sub_sca$desc1),main ='',xlab='Fusion (MY)',
      xlim= c(0,0.09), ylim =c(-10,260))
 title(main = "(A)", adj = 0, line = 0.5)
 polygon(density(sub_sca$desc1),col=cols[1])
@@ -72,7 +72,7 @@ text(x=x,y=230,pos= 4, "Passalidae")
 # scarab
 cols <- viridis(3, option = 'D',alpha = 0.7, begin = 0.45)
 hpdcols <- viridis(3, option = 'D', begin = 0.45)
-plot(density((sub_sca$asc1)),main ='',xlab='Fission (/MY)',
+plot(density((sub_sca$asc1)),main ='',xlab='Fission (MY)',
      ylim =c(-10,260), xlim=c(0,0.09))
 title(main = "(B)", adj = 0, line = 0.5)
 polygon(density(sub_sca$asc1),col=cols[1])
