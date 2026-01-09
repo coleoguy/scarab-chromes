@@ -47,7 +47,8 @@ for(i in 1:length(trees)){
 }
 # random pick one
 # for plotting I chose 37 so keep it consistent
-tree <- trees[[37]]
+for (t in 1:length(trees)){
+tree <- trees[[t]]
 #making Q matrix
 rng <- range(chrom$Chroms)
 rng.len <- rng[2]-rng[1]+1
@@ -152,8 +153,9 @@ for(i in 1:nrow(x)){
 }
 colnames(x) <- 1:(rng.len*3)
 sim <- 100
-# test <- make.simmap2(tree, x = x, model = chrom.mat, pi = 'fitzjohn', nsim = sim,rejmax = 1000000,rejint = 100000, monitor = T )
-# saveRDS(test, file = '../results/simmap.rds')
+test <- make.simmap2(tree, x = x, model = chrom.mat, pi = 'fitzjohn', nsim = sim,rejmax = 1000000,rejint = 100000, monitor = T )
+saveRDS(test, file = paste0('../results/simmap/simmap_',t,'.rds'))
+}
 test <- readRDS('../results/simmap.rds')
 #
 counts <- describe.simmap2(test)$count
