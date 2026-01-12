@@ -251,7 +251,7 @@ par(
   mfrow = c(5, 5),
   mar = c(2, 2, 1.5, 0.5)
 )
-overlap <- c()
+exceed <- c()
 for (i in 1:100){
   plot(density(exp[,i], bw = .01),
        xlim = c(.05, 0.5), main = "",
@@ -269,13 +269,11 @@ for (i in 1:100){
   obs_min <- min(obshpd)
   obs_max <- max(obshpd)
   # overlap and observe mean < exp mean
-  overlap_flag <-exp_min <= obs_max && obs_min <= exp_max
-  
-  
-    mean(exphpd, na.rm = TRUE) > mean(obshpd, na.rm = TRUE)
-  overlap <- c(overlap, overlap_flag)
+  no_overlap_flag <- exp_max < obs_min || obs_max < exp_min
+  mean_less_flag <- mean(exphpd, na.rm = TRUE) < mean(obshpd, na.rm = TRUE)
+  exceed <- c(exceed,no_overlap_flag && mean_less_flag)
 }
-sum(overlap)
+sum(exceed)
 
 ## AA fusion (desc)
 # column that are fusions
