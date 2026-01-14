@@ -476,8 +476,8 @@ colnames(obs) <- paste0("tree", 1:100)
 # write.csv(obs, file = '../results/simmap_species_level/obs.csv')
 # plot
 cols <- viridis(2, begin = 0.5, alpha = 0.65)
-exp <- read.csv('../results/simmap/exp.csv', row.names = 1)
-obs <- read.csv('../results/simmap/obs.csv', row.names = 1)
+exp <- read.csv('../results/simmap_species_level//exp.csv', row.names = 1)
+obs <- read.csv('../results/simmap_species_level//obs.csv', row.names = 1)
 par(
   mfrow = c(5, 5),
   mar = c(2, 2, 1.5, 0.5)
