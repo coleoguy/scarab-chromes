@@ -61,4 +61,5 @@ for(i in 1:7){
           col=cols[i], lwd = 3, lty =3)
   }
 }
+title(main = "(B)", adj = 0, line = 0.5)
 # save PDF 6x6

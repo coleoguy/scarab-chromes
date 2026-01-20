@@ -29,4 +29,5 @@ points(0.5,20, col = cols[2], pch = 16, cex = cex )
 text(0.5,20, pos = 4, labels = 'Lucanidae')
 points(0.5,19, col = cols[3], pch = 16, cex = cex )
 text(0.5,19, pos = 4, labels = 'Passalidae')
+title(main = "(A)", adj = 0, line = 0.5)
 # save PDF 6x6
