@@ -17,11 +17,12 @@ pdat <- pdat[complete.cases(pdat),]
 pdat <- pdat[order(pdat$XY),]
 xs1 <- c(1,1,1, seq(from=.95, by=.03,length.out=4))
 cols <- viridis(7, option = 'D',alpha = 0.7, begin = 0)
+par(mgp = c(2.5, 1, 0))
 plot(y=pdat$XY, x=xs1,
      xlim=c(.75,2.25),
      ylim=c(4.5,9.5),
      xaxt="n",
-     xlab="Sex Chromosome System", ylab = 'Haploid Autosome Number ( x\u0305 )',
+     xlab="Sex Chromosome System", ylab = expression("Haploid Autosome Number (" * bar(x) * ")"),
      cex =1.5, pch = 16,
      cex.lab = 1.2,
      col = cols
