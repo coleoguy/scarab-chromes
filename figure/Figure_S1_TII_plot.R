@@ -3,7 +3,7 @@
 library(seqinr)
 ###TII by Mesquite
 ## bs500 
-datMesquite<- read.csv("../data/TII_Mesquite.csv")
+datMesquite<- read.csv("../results/TII_Mesquite.csv")
 # plot
 plot(x = (1:length(datMesquite$ID)),y = datMesquite$TII[order(datMesquite$TII)],
      xlab = "Taxa", ylab = "Taxonomic Instability Index")
