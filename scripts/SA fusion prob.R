@@ -1,13 +1,11 @@
 # propotion of SA-fusion
-library(devtools)
-install_github('coleoguy/evobir')
 library(evobiR)
 library(ape)
 library(phytools)
 library(viridis)
 source('functions.R')
 library(coda)
-# read in data
+### read in data ####
 allchrom <- read.csv('../data/SpeciesChromList.csv')
 trees <- read.tree("../data/final100trees")
 tip.names <- trees[[1]]$tip.label
@@ -48,24 +46,24 @@ for(i in 1:length(trees)){
 # random pick one
 # for plotting I chose 37 so keep it consistent
 for (t in 1:length(trees)){
-tree <- trees[[t]]
-#making Q matrix
-rng <- range(chrom$Chroms)
-rng.len <- rng[2]-rng[1]+1
-chrom.mat <- matrix(data = 0, nrow = (rng.len*3), ncol = (rng.len*3))
-# fill in the Q matrix
-# 12 parameters
-# fill in +1 and -1 in same scs
-for (i in 1:(rng.len*3)){
-  for (j in 1:(rng.len*3)){
-    # Neo to others
-    if (i <= rng.len){
+  tree <- trees[[t]]
+  #making Q matrix
+  rng <- range(chrom$Chroms)
+  rng.len <- rng[2]-rng[1]+1
+  chrom.mat <- matrix(data = 0, nrow = (rng.len*3), ncol = (rng.len*3))
+  # fill in the Q matrix
+  # 12 parameters
+  # fill in +1 and -1 in same scs
+  for (i in 1:(rng.len*3)){
+    for (j in 1:(rng.len*3)){
+      # Neo to others
+      if (i <= rng.len){
       # to Neo
-      if (j <= rng.len){
-        if (i +1 == j){
-          chrom.mat[i,j] <- 1
-        }
-        if (i == j+1){
+        if (j <= rng.len){
+          if (i +1 == j){
+            chrom.mat[i,j] <- 1
+          }
+          if (i == j+1){
           chrom.mat[i,j] <- 2
         }
       }
@@ -152,15 +150,14 @@ for(i in 1:nrow(x)){
   x[i, chrom$sim.state[i]] <- 1
 }
 colnames(x) <- 1:(rng.len*3)
-sim <- 100
-test <- make.simmap2(tree, x = x, model = chrom.mat, pi = 'fitzjohn', nsim = sim,rejmax = 1000000,rejint = 100000, monitor = T )
-saveRDS(test, file = paste0('../results/simmap/simmap_',t,'.rds'))
+# sim <- 100
+# test <- make.simmap2(tree, x = x, model = chrom.mat, pi = 'fitzjohn', nsim = sim,rejmax = 1000000,rejint = 100000, monitor = T )
+# saveRDS(test, file = paste0('../results/simmap/simmap_',t,'.rds'))
 }
-# test <- readRDS('../results/simmap.rds')
 
+# Running analysis for each tree and save the results
 exp <- matrix(NA,nrow = 100, ncol = 100)
 obs <-  matrix(NA,nrow = 100, ncol = 100)
-
 for (t in 1:length(trees)){
   print(paste0('Tree: ',t))
   test <- readRDS(paste0('../results/simmap/simmap_',t,'.rds'))
@@ -241,8 +238,7 @@ colnames(exp) <- paste0("tree", 1:100)
 colnames(obs) <- paste0("tree", 1:100)
 # write.csv(exp, file = '../results/simmap/exp.csv')
 # write.csv(obs, file = '../results/simmap/obs.csv')
-#
-# plot
+
 cols <- viridis(2, begin = 0.5, alpha = 0.65)
 hpdcols <- viridis(2, begin = 0.5)
 exp <- read.csv('../results/simmap/exp.csv', row.names = 1)
@@ -275,8 +271,15 @@ for (i in 1:100){
 }
 sum(exceed)
 
-## AA fusion (desc)
-# column that are fusions
+
+##########################################
+# plot 37th tree for manuscript (random) #
+##########################################
+
+# ran script lines 1-48
+# test <- readRDS('../results/simmap.rds')
+test <- test[1:100]
+counts <- describe.simmap2(test)$count
 need.col <- c()
 for (i in 2:rng.len){
   need.col <- c(need.col,paste(i,i-1, sep = ','))
@@ -344,7 +347,6 @@ for(i in 1:100){
 }
 mean(expSA)
 mean(obspropSA)
-# plot
 cols <- viridis(2, begin = 0.5, alpha = 0.65)
 hpdcols <- viridis(2, begin = 0.5)
 plot(density(expSA, bw = .01),
@@ -368,37 +370,3 @@ text(x=x,y=38, pos = 4, labels = "Observed", cex = 1)
 hpd <- HPDinterval(as.mcmc(obspropSA))
 lines(y=c(y,y), x=hpd[1:2], lwd = lwd,col=hpdcols[2])
 # save as PDF 6x6
-
-
-## simmap plot
-library(fields)
-# NeoXY, XO, XY
-cols <- setNames(c(colorRampPalette(c("firebrick1", "firebrick4"))(17),
-                   colorRampPalette(c("green", "green4"))(17),
-                   colorRampPalette(c("dodgerblue", "dodgerblue4"))(17)), 
-                 c(1:51))
-plotSimmap(test[[1]], type = 'fan', fsize = 0.03, colors = cols)
-sexmode <- as.factor(setNames(chrom$SCS, chrom$Species))
-sexmode <- to.matrix(sexmode, levels(sexmode))
-sexmode <- sexmode[test[[1]]$tip.label,]
-tiplabels(pie = sexmode, piecol = palette()[c(2,3,4)], cex = 0.15)
-# Create a color palette
-color_pal <- colorRampPalette(c("firebrick1", "firebrick4"))(17)
-data_matrix <- matrix(1:17, nrow = 17, ncol = 1)
-image.plot(z = data_matrix, col = color_pal, axes = FALSE, legend.only = TRUE,
-           legend.width = 1,
-           legend.shrink = 1, legend.mar = 3)
-
-color_pal <- colorRampPalette(c("green", "green4"))(17)
-data_matrix <- matrix(1:17, nrow = 17, ncol = 1)
-image.plot(z = data_matrix, col = color_pal, axes = FALSE, legend.only = TRUE,
-           legend.width = 1,
-           legend.shrink = 1, add = TRUE, legend.mar = 6,
-           axis.args = list(labels = FALSE, tick = FALSE))
-
-color_pal <- colorRampPalette(c("dodgerblue", "dodgerblue4"))(17)
-data_matrix <- matrix(1:17, nrow = 17, ncol = 1)
-image.plot(z = data_matrix, col = color_pal, axes = FALSE, legend.only = TRUE,
-           legend.width = 1,
-           legend.shrink = 1, add = TRUE, legend.mar = 9,
-           axis.args = list(labels = FALSE, tick = FALSE))

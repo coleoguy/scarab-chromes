@@ -3,12 +3,10 @@ library(diversitree)
 library(phytools)
 library(viridis)
 library(coda)
-library(devtools)
-install_github('coleoguy/evobir')
 library(evobiR)
 library(ape)
 source('functions.R')
-
+### read in data ####
 allchrom <- read.csv('../data/SpeciesChromList.csv')
 trees <- read.tree("../data/final100trees")
 # tree tips
@@ -270,9 +268,6 @@ chrom$SCS <- sub("XXXXXO", "XO", chrom$SCS)
 for(i in 1:length(trees)){
   trees[[i]]$edge.length <- trees[[i]]$edge.length * 100
 }
-# random pick one
-# for plotting I chose 37 so keep it consistent
-tree <- trees[[37]]
 
 for (t in 1:length(trees)){
   tree <- trees[[t]]
@@ -380,17 +375,10 @@ for(i in 1:nrow(x)){
 }
 colnames(x) <- 1:(rng.len*3)
 sim <- 100
-test <- make.simmap2(tree, x = x, model = chrom.mat, pi = 'fitzjohn', nsim = sim,rejmax = 1000000,rejint = 100000, monitor = T )
-saveRDS(test, file = paste0('../results/simmap_species_level/simmap_',t,'.rds'))
+# test <- make.simmap2(tree, x = x, model = chrom.mat, pi = 'fitzjohn', nsim = sim,rejmax = 1000000,rejint = 100000, monitor = T )
+# saveRDS(test, file = paste0('../results/simmap_species_level/simmap_',t,'.rds'))
 }
 
-# test <- make.simmap2(tree, x = x, model = chrom.mat, pi = 'fitzjohn', nsim = sim,rejmax = 1000000,rejint = 100000, monitor = T )
-# saveRDS(test, file = '../results/simmap_species_level.rds')
-test <- readRDS('../results/simmap_species_level.rds')
-
-
-
-#
 exp <- matrix(NA,nrow = 100, ncol = 100)
 obs <-  matrix(NA,nrow = 100, ncol = 100)
 for (t in 1:length(trees)){
@@ -506,7 +494,83 @@ for (i in 1:100){
 }
 sum(exceed)
 
+##########################################
+# plot 37th tree for manuscript (random) #
+##########################################
+
+# saveRDS(test, file = '../results/simmap_species_level.rds')
+# random pick one
+# for plotting I chose 37 so keep it consistent
+tree <- trees[[37]]
+test <- readRDS('../results/simmap_species_level.rds')
+counts <- describe.simmap2(test)$count
+need.col <- c()
+for (i in 2:rng.len){
+  need.col <- c(need.col,paste(i,i-1, sep = ','))
+}
+for (i in 19:(rng.len*2)){
+  need.col <- c(need.col,paste(i,i-1, sep = ','))
+}
+for (i in 36:(rng.len*3)){
+  need.col <- c(need.col,paste(i,i-1, sep = ','))
+}
+AAfusion <- rowSums(counts[,which(colnames(counts) %in% need.col,T)])
+## SAfusion
+need.col <- c()
+for (i in (rng.len+1+1):(rng.len*2)){
+  need.col <- c(need.col,paste(i,i-18, sep = ','))
+}
+for (i in 36:51){
+  need.col <- c(need.col,paste(i,i-35,sep = ','))
+}
+for (i in 19:34){
+  need.col <- c(need.col,paste(i,i+16, sep = ','))
+}
+SAfusion <- rowSums(counts[,which(colnames(counts) %in% need.col,T)])
+totalfusion <- rowSums(counts[,colnames(counts)])
+obspropSA <- SAfusion / (SAfusion + AAfusion)
+expSA <- c()
+for(i in 1:100){
+  print(i)
+  times <- describe.simmap(test[[i]])$times[2, ]
+  expSA[i] <- sum(Pfsa(Da =  6, scs = "XY") * times[c(1, 35)],
+                  Pfsa(Da =  8, scs = "XY") * times[c(2, 36)],
+                  Pfsa(Da = 10, scs = "XY") * times[c(3, 37)],
+                  Pfsa(Da = 12, scs = "XY") * times[c(4, 38)],
+                  Pfsa(Da = 14, scs = "XY") * times[c(5, 39)],
+                  Pfsa(Da = 16, scs = "XY") * times[c(6, 40)],
+                  Pfsa(Da = 18, scs = "XY") * times[c(7, 41)],
+                  Pfsa(Da = 20, scs = "XY") * times[c(8, 42)],
+                  Pfsa(Da = 22, scs = "XY") * times[c(9, 43)],
+                  Pfsa(Da = 24, scs = "XY") * times[c(10, 44)],
+                  Pfsa(Da = 26, scs = "XY") * times[c(11, 45)],
+                  Pfsa(Da = 28, scs = "XY") * times[c(12, 46)],
+                  Pfsa(Da = 30, scs = "XY") * times[c(13, 47)],
+                  Pfsa(Da = 32, scs = "XY") * times[c(14, 48)],
+                  Pfsa(Da = 36, scs = "XY") * times[c(15, 50)],
+                  Pfsa(Da = 38, scs = "XY") * times[c(16, 51)],
+                  #XO
+                  Pfsa(Da =  7, scs = "XO") * times[18],
+                  Pfsa(Da =  9, scs = "XO") * times[19],
+                  Pfsa(Da = 11, scs = "XO") * times[20],
+                  Pfsa(Da = 13, scs = "XO") * times[21],
+                  Pfsa(Da = 15, scs = "XO") * times[22],
+                  Pfsa(Da = 17, scs = "XO") * times[23],
+                  Pfsa(Da = 19, scs = "XO") * times[24],
+                  Pfsa(Da = 21, scs = "XO") * times[25],
+                  Pfsa(Da = 23, scs = "XO") * times[26],
+                  Pfsa(Da = 25, scs = "XO") * times[27],
+                  Pfsa(Da = 27, scs = "XO") * times[28],
+                  Pfsa(Da = 29, scs = "XO") * times[29],
+                  Pfsa(Da = 31, scs = "XO") * times[30],
+                  Pfsa(Da = 33, scs = "XO") * times[31],
+                  Pfsa(Da = 35, scs = "XO") * times[32],
+                  Pfsa(Da = 37, scs = "XO") * times[33],
+                  Pfsa(Da = 39, scs = "XO") * times[34]
+                  )
+}
 hpdcols <- viridis(2, begin = 0.5)
+cols <- viridis(2, begin = 0.5, alpha = 0.65)
 plot(density(expSA, bw = .01),
      xlim = c(.15, 0.65), main = "",
      ylim = c(-0.5, 40),
