@@ -54,6 +54,8 @@ This folder contains the primary output files from the analyses. All results can
 ### /figure
 Contains R scripts (Base R) used to generate the figures presented in the manuscript.
 
+`Figure_1_chromosome_evo_model.tiff`: Markov model of chromosome number and sex chromosome system evolution.
+
 `Figure_2A_scs_autosome_dist.R`: Figure 2A. This figure visualizes all 478 available karyotype records from the database, showing the distribution of haploid autosome numbers and sex chromosome system (SCS). 
 
 `Figure_2B_XY-NeoXY.R`: Figure 2B. There are 7 genera that possess both XY and neo-XY SCSs in available karyotype records from the database.
