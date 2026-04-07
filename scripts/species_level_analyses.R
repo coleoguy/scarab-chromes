@@ -497,12 +497,11 @@ sum(exceed)
 ##########################################
 # plot 37th tree for manuscript (random) #
 ##########################################
-
-# saveRDS(test, file = '../results/simmap_species_level.rds')
 # random pick one
 # for plotting I chose 37 so keep it consistent
+# run simmap and SA-fusion on tree 37 
 tree <- trees[[37]]
-test <- readRDS('../results/simmap_species_level.rds')
+test <- readRDS('../results/simmap_species_level_tree37.rds')
 counts <- describe.simmap2(test)$count
 need.col <- c()
 for (i in 2:rng.len){

@@ -277,7 +277,7 @@ sum(exceed)
 ##########################################
 
 # ran script lines 1-48
-# test <- readRDS('../results/simmap.rds')
+# test <- readRDS('../results/simmap_tree37.rds')
 test <- test[1:100]
 counts <- describe.simmap2(test)$count
 need.col <- c()
